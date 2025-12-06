@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPILAN NATIONAL HIGH SCHOOL - Where Creativity Meets Innovation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
+</head>
+<body class="loading">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-logo">
+            <!-- Use your school logo - make sure the path is correct -->
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}"alt="Ipilan National High School Logo">
+        </div>
+        <div class="preloader-text">
+            Welcome to Ipilan National High School
+        </div>
+        <div class="preloader-spinner"></div>
+        <div class="preloader-progress">
+            <div class="preloader-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}" 
+                alt="Ipilan National High School Logo" 
+                class="logo-img">
+            <div class="logo-text">INHS</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="dropdown">
+                <a href="{{ url_for('home') }}#about">About Us <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('home') }}#history"><i class="fas fa-landmark"></i> History</a>
+                    <a href="{{ url_for('home') }}#mission"><i class="fas fa-bullseye"></i> Mission & Vision</a>
+                    <a href="{{ url_for('home') }}#values"><i class="fas fa-heart"></i> Values</a>
+                    <a href="{{ url_for('home') }}#locate-us"><i class="fas fa-map-marker-alt"></i> Locate Us</a>
+                </div>
+            </li>
+            <li><a href="{{ url_for('programs') }}">Programs</a></li>
+            <li><a href="{{ url_for('home') }}#facilities">Facilities</a></li>
+            <li><a href="{{ url_for('faculty') }}">Faculty</a></li>
+            <li><a href="{{ url_for('events') }}">Events & Announcements</a></li>
+            <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+            <li><a href="{{ url_for('home') }}#contact">Contact</a></li>
+            <li class="admin-settings">
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-icon" title="Admin Dashboard">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </li>
+        </ul>
+    
+    <!-- Mobile Menu Button -->
+<!-- In your navbar HTML, make sure you have: -->
+<button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+    <section class="hero" id="home">
+    <!-- Single Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="heroVideo">
+            <source src="{{ url_for('static', filename='resources/nnhs slideshow.mp4') }}" type="video/mp4">
+            <!-- Fallback image if video doesn't load -->
+            <div class="video-fallback" style="background-image: url('{{ url_for('static', filename='resources/PP.jpg') }}')"></div>
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <div class="hero-content">
+        <h1>WELCOME TO IPILAN NATIONAL HIGH SCHOOL</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">The School Where Great Things Happen With God</p>
+        <a href="#" class="btn" onclick="openModal()">Apply Now</a>
+    </div>
+</section>
+
+    <!-- Modal Form -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Student Registration</h2>
+
+
+        <!-- Flash messages inside modal 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %} -->
+            <form id="registrationForm" action="{{ url_for('submit_registration') }}" method="POST">
+    <!-- Full Name -->
+    <div class="form-group">
+        <label for="name">Full Name:</label>
+        <div class="input-wrapper">
+            <input type="text" id="name" name="name" required>
+        </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+        <label for="email">Email Address:</label>
+        <div class="input-wrapper">
+            <input type="email" id="email" name="email" required>
+        </div>
+    </div>
+
+    
+
+    <!-- Grade -->
+    <div class="form-group">
+        <label for="grade_level">Grade Level:</label>
+        <div class="input-wrapper">
+            <select id="grade_level" name="grade_level" required>
+                <option value="">Select grade level</option>
+                <option value="Grade 7">Grade 7</option>
+                <option value="Grade 8">Grade 8</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Grade 12">Grade 12</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Strand -->
+    <div class="form-group" id="strand-group" style="display:none;">
+        <label for="strand">Academic Strand:</label>
+        <div class="input-wrapper">
+            <select id="strand" name="strand">
+                <option value="">Select a strand</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="form-group">
+        <label for="dob">Date of Birth:</label>
+        <div class="input-wrapper">
+            <input type="date" id="dob" name="dob" required>
+        </div>
+    </div>
+
+    <button type="submit" class="btn" id="submitBtn">Submit Application</button>
+</form>
+
+        </div>
+    </div>
+
+    <!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Flash messages rendered by Flask -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        {% for category, message in messages %}
+          showFlash("{{ message }}", "{{ category }}");
+        {% endfor %}
+      });
+    </script>
+  {% endif %}
+{% endwith %}
+
+<script>
+function openModal() {
+  document.getElementById("registrationModal").style.display = "block";
+}
+function closeModal() {
+  document.getElementById("registrationModal").style.display = "none";
+}
+
+function showFlash(message, category) {
+  const toast = document.createElement("div");
+  toast.className = "toast " + category;
+  toast.innerText = message;
+
+  document.getElementById("toast-container").appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    toast.remove();
+  }, 4000);
+}
+</script>
+
+    <!-- Spinner -->
+    <div id="spinner" class="spinner">
+        <div class="spinner-icon"></div>
+        <p>Processing your application...</p>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeConfirmation()">&times;</span>
+            <h2>Registration Successful!</h2>
+            <p>Your application has been submitted successfully. We'll contact you soon.</p>
+            <div class="confirmation-actions">
+                <button class="btn" onclick="closeConfirmation()">Close</button>
+                <button class="btn btn-secondary" onclick="viewApplications()">View Applications</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications Modal -->
+    <div id="applicationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeApplications()">&times;</span>
+            <h2>Student Applications</h2>
+            <div id="applicationsList" class="applications-list">
+                <!-- Applications will be loaded here -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeApplications()">Close</button>
+                <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- About Section -->
+    <section class="section about" id="about">
+        <div class="container">
+            <h2 class="section-title">About Our School</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Excellence in Education</h2>
+                    <p>Located in the beautiful town of Brooke's Point in Palawan, Ipilan National High School is a premier educational institution dedicated to providing quality education to the youth of the community. 
+                        With a focus on academic excellence, character development, and holistic growth, we strive to empower our students to become responsible and productive members of society.</p>
+                    <p>Our school offers a wide range of academic programs, extracurricular activities, 
+                        and support services to cater to the diverse needs and interests of our students. 
+                        From STEM subjects to arts and sports, our curriculum is designed to inspire creativity, critical thinking, and lifelong learning. 
+                        With a team of dedicated educators, state-of-the-art facilities, and a supportive community, 
+                        Ipilan National High School is committed to nurturing the potential of every student and preparing them for a successful future.</p>
+                </div>
+   
+<div class="about-image">
+    <img src="{{ url_for('static', filename='resources/inhs ground.jpg') }}" alt="INHS Campus">
+</div>
+    </section>
+
+    <!-- History Section -->
+    <section class="section history" id="history">
+        <div class="container">
+            <h2 class="section-title">Our History</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">1960</div>
+                    <div class="timeline-content">
+                        <h3>Foundation</h3>
+                        <p>Ipilan National High School was established with a vision to provide quality education in technology and creative arts.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1975</div>
+                    <div class="timeline-content">
+                        <h3>Expansion</h3>
+                        <p>Added Engineering and Business schools, becoming a comprehensive high school.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1990</div>
+                    <div class="timeline-content">
+                        <h3>International Recognition</h3>
+                        <p>Gained accreditation and established international partnerships with schools worldwide.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2010</div>
+                    <div class="timeline-content">
+                        <h3>Digital Transformation</h3>
+                        <p>Pioneered digital education and established state-of-the-art research centers.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2024</div>
+                    <div class="timeline-content">
+                        <h3>Modern Era</h3>
+                        <p>Continuing to lead in innovation with AI research, sustainable technologies, and global collaborations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission & Vision Section -->
+    <section class="section mission-vision" id="mission">
+        <div class="container">
+            <h2 class="section-title">Mission & Vision</h2>
+            <div class="mv-grid">
+                <div class="mv-card">
+                    <div class="mv-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Our Mission</h3>
+                    <p>To protect and promote the right of every Filipino to quality, equitable, culture-based, and complete basic education where:</p>
+                            <p><i></i> “Students learn in a child-friendly, gender-sensitive, safe, and motivating environment.”</p>
+                            <p><i></i> “Teachers facilitate learning and constantly nurture every learner.”</p>
+                            <p><i></i> “Administrators and staff, as stewards of the institution, ensure an enabling and supportive environment for effective learning to happen.”</p>
+                            <p><i></i> “The family, community, and other stakeholders are actively engaged and share responsibility for developing life-long learners.”</p>
+                </div>
+                <div class="mv-card">
+                    <div class="mv-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Our Vision</h3>
+                    <p>We dream of Filipinos
+                    who passionately love their country
+                    and whose values and competencies
+                    enable them to realize their full potential
+                    and contribute meaningfully to building the nation.
+
+                    As a learner-centered public institution,
+                    the Department of Education continuously improves itself
+                    to better serve its stakeholders.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="section values" id="values">
+        <div class="container">
+            <h2 class="section-title">Our Values</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-pray"></i>
+                    </div>
+                    <h3>MAKA-DIYOS</h3>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>MAKATAO</h3>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>MAKAKALIKASAN</h3>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                    <h3>MAKABANSA</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <!-- Facilities Section -->
+<section class="section facilities" id="facilities">
+    <div class="container">
+        <h2 class="section-title">Campus Facilities</h2>
+        
+        <div class="facilities-slideshow">
+            <!-- Slideshow Container -->
+            <div class="facility-slideshow-container">
+                <!-- Slide 1 -->
+                <div class="facility-slide active">
+                    <div class="facility-slide-image" style="background-image: url('{{ url_for('static', filename='resources/lib_faci.png') }}')"></div>
+                    <div class="facility-slide-content">
+                        <h3>School Library</h3>
+                        <p>Our School Library is one of the most important facilities in our school, serving as a center for knowledge, research, and independent learning. It provides students and teachers with access to books, references, and digital resources that support classroom instruction and foster a love for reading. Beyond academics, our library encourages curiosity, critical thinking, and lifelong learning, making it an essential space for both personal growth and educational success.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> “Your gateway to knowledge””</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="facility-slide">
+                    <div class="facility-slide-image" style="background-image: url('{{ url_for('static', filename='resources/garden_faci.png') }}')"></div>
+                    <div class="facility-slide-content">
+                        <h3>School Garden</h3>
+                        <p>Gulayan sa Paaralan is a living classroom where students can plant, nurture, and harvest a variety of fruits, vegetables, and herbs. It promotes healthy living by teaching the value of fresh food, sustainability, and care for the environment. More than just soil and plants, the garden inspires teamwork, responsibility, and a deeper connection to nature, making it an essential space for both learning and well-being.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> “Grow knowledge, grow health”</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="facility-slide">
+                    <div class="facility-slide-image" style="background-image: url('{{ url_for('static', filename='resources/sci_faci.png') }}')"></div>
+                    <div class="facility-slide-content">
+                        <h3>Science Laboratory</h3>
+                        <p>A dynamic space where curiosity turns into discovery. Equipped with tools and instruments for experiments, it allows students to explore chemistry, physics, biology, and other sciences in a hands-on way. More than just a room of equipment, the laboratory fosters critical thinking, innovation, and a spirit of exploration, helping learners connect theory with practice and inspiring them to pursue knowledge that shapes the future.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> "Where ideas spark into discovery.”</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="facility-slide">
+                    <div class="facility-slide-image" style="background-image: url('{{ url_for('static', filename='resources/MRF_faci.png') }}')"></div>
+                    <div class="facility-slide-content">
+                        <h3>MRF</h3>
+                        <p>The Materials Recovery Facility is a hands-on learning space where students practice proper waste segregation and recycling. By sorting plastics, paper, metals, and biodegradable materials, learners gain a deeper understanding of environmental responsibility and sustainable living. More than just a place for managing trash, the MRF teaches discipline, awareness, and care for the planet, empowering students to become advocates of a cleaner and healthier community.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i>“Segregate today, sustain tomorrow.”</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 5 -->
+                <div class="facility-slide">
+                    <div class="facility-slide-image" style="background-image: url('{{ url_for('static', filename='resources/compose_faci.png') }}')"></div>
+                    <div class="facility-slide-content">
+                        <h3>Compost Pit</h3>
+                        <p>INHS Compost Pit, a practical learning space where students recycle biodegradable waste into nutrient-rich compost. By turning food scraps and garden clippings into organic fertilizer, learners discover the importance of sustainability and how waste can be transformed into something valuable. More than just a pit, it teaches responsibility, environmental stewardship, and supports the school garden by providing natural nourishment for healthy plants and crops.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i>“From waste to wellness, growing life naturally.”</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 6 -->
+                <div class="facility-slide">
+                    <div class="facility-slide-image" style="background-image: url('{{ url_for('static', filename='resources/forest_faci.png') }}')"></div>
+                    <div class="facility-slide-content">
+                        <h3>Forest Park</h3>
+                        <p>School Forest Park is a natural sanctuary where students can learn, relax, and connect with the environment. Surrounded by trees and greenery, it provides a space for outdoor classes, ecological studies, and recreational activities that promote wellness and appreciation for nature. More than just a scenic area, the forest park nurtures environmental awareness, resilience, and a sense of responsibility to protect the planet.</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> “Discover nature, nurture knowledge.”</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Navigation Controls -->
+            <button class="facility-nav facility-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="facility-nav facility-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <!-- Dots Indicator -->
+            <div class="facility-dots">
+                <div class="facility-dot active" data-index="0"></div>
+                <div class="facility-dot" data-index="1"></div>
+                <div class="facility-dot" data-index="2"></div>
+                <div class="facility-dot" data-index="3"></div>
+                <div class="facility-dot" data-index="4"></div>
+                <div class="facility-dot" data-index="5"></div>
+            </div>
+        </div>
+
+        <!-- Facilities Grid (Alternative View) -->
+        <div class="facilities-grid-mini">
+            <div class="facility-mini-card" data-index="0">
+                <div class="facility-mini-image" style="background-image: url('{{ url_for('static', filename='resources/lib_faci.png') }}')"></div>
+                <h4>School Library</h4>
+            </div>
+            <div class="facility-mini-card" data-index="1">
+                <div class="facility-mini-image" style="background-image: url('{{ url_for('static', filename='resources/garden_faci.png') }}')"></div>
+                <h4>School Garden</h4>
+            </div>
+            <div class="facility-mini-card" data-index="2">
+                <div class="facility-mini-image" style="background-image: url('{{ url_for('static', filename='resources/sci_faci.png') }}')"></div>
+                <h4>Sports</h4>
+            </div>
+            <div class="facility-mini-card" data-index="3">
+                <div class="facility-mini-image" style="background-image: url('{{ url_for('static', filename='resources/MRF_faci.png') }}')"></div>
+                <h4>MRF</h4>
+            </div>
+            <div class="facility-mini-card" data-index="4">
+                <div class="facility-mini-image" style="background-image: url('{{ url_for('static', filename='resources/compose_faci.png') }}')"></div>
+                <h4>Compost Pit</h4>
+            </div>
+            <div class="facility-mini-card" data-index="5">
+                <div class="facility-mini-image" style="background-image: url('{{ url_for('static', filename='resources/forest_faci.png') }}')"></div>
+                <h4>Forest Park</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Locate Us Section -->
+<section class="section locate-us" id="locate-us">
+    <div class="container">
+        <h2 class="section-title">Find Our School</h2>
+        <div class="locate-content">
+            <div class="locate-info">
+                <div class="locate-header">
+                    <h3><i class="fas fa-map-marker-alt"></i> IPILAN NATIONAL HIGH SCHOOL</h3>
+                    <p class="locate-address">
+                        Barangay Ipilan, Brooke's Point, Palawan, Philippines
+                    </p>
+                </div>
+                
+                <div class="locate-details">
+                    <div class="detail-card">
+                        <i class="fas fa-school"></i>
+                        <div>
+                            <h4>School Type</h4>
+                            <p>Public Secondary Institution</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <i class="fas fa-map-pin"></i>
+                        <div>
+                            <h4>Coordinates</h4>
+                            <p>8.8392° N, 117.8957° E</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <i class="fas fa-landmark"></i>
+                        <div>
+                            <h4>Municipality</h4>
+                            <p>Brooke's Point, Palawan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <h4>Barangay</h4>
+                            <p>Ipilan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="locate-actions">
+                    <button class="btn btn-primary" onclick="getDirections()">
+                        <i class="fas fa-route"></i> Get Directions
+                    </button>
+                    <button class="btn btn-secondary" onclick="copySchoolAddress()">
+                        <i class="fas fa-copy"></i> Copy Address
+                    </button>
+                </div>
+            </div>
+            
+            <div class="locate-map">
+                <!-- Visible Google Maps Embed -->
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3932.034648215432!2d117.89313847580978!3d8.83915749191787!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3234fe6de2ea6e71%3A0xb6e249b4160cc3ca!2sIpilan%20National%20High%20School!5e0!3m2!1sen!2sph!4v1700000000000!5m2!1sen!2sph"
+                        width="100%" 
+                        height="100%" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Ipilan National High School Location Map">
+                    </iframe>
+                    <div class="map-overlay-text">
+                        <p><i class="fas fa-hand-pointer"></i> Interactive Map - Click and drag to explore</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <div class="logo-container">
+                        <div class="logo-img">INHS</div>
+                        <h3>Ipilan National High School</h3>
+                    </div>
+                    <p>Where creativity meets technology and culture. Shaping the future through education and innovation since 1960.</p>
+ </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#history">History</a></li>
+                        <li><a href="#mission">Mission & Vision</a></li>
+                        <li><a href="{{ url_for('programs') }}">Programs</a></li> 
+                        <li><a href="#facilities">Facilities</a></li>
+                        <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+                        <li><a href="#announcements">Events and Announcements</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Education Boulevard, Knowledge City</li>
+                        <li><i class="fas fa-phone"></i> 0917 301 6882</li>
+                        <li><i class="fas fa-envelope"></i>301700@deped.gov.ph</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 8:00 AM - 6:00 PM</li>
+                        <ul>
+                            <li>
+                                <a href="https://www.facebook.com/share/1EXQdCJm9U/" target="_blank">
+                                <i class="fab fa-facebook"></i> INHS facebook page
+                                </a>
+                                
+                            </li>
+                            </ul>
+
+
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Ipilan National High School. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+    <!-- JavaScript Files -->
+     <script src="{{ url_for('static', filename='database.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='validation.js') }}"></script> -->
+     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="database.js"></script>
+    <script src="validation.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

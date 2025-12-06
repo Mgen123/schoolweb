@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Ipilan National High School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/announcement.css">
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a4b8c;
+            --secondary: #e63946;
+            --accent: #f4a261;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --transition: all 0.3s ease;
+        }
+
+         /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #preloader.loaded {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .preloader-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .preloader-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .preloader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            animation: spin 1s linear infinite;
+        }
+
+        .preloader-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+
+        .preloader-progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Hide main content until preloader is done */
+        body.loading .navbar,
+        body.loading .hero,
+        body.loading .section,
+        body.loading .footer {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        body.loaded .navbar,
+        body.loaded .hero,
+        body.loaded .section,
+        body.loaded .footer {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--error);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        /* Login Container */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 30px;
+        }
+
+        .login-logo h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .login-logo p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .login-form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-family: 'Lato', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Admin Header */
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2c5aa0 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo h1 {
+            color: white;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Main Container */
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 400px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-family: 'Lato', sans-serif;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.1);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .filter-controls select {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-family: 'Lato', sans-serif;
+            background: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-controls select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Students Section */
+        .students-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .export-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Table Styles */
+        .table-container {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .students-table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .students-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .students-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-delete {
+            background-color: var(--error);
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Loading and No Data Messages */
+        .loading-message,
+        .no-data-message {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .loading-message i,
+        .no-data-message i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .pagination-btn {
+            padding: 8px 15px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            margin: 0 15px;
+            color: var(--gray);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-large {
+            max-width: 700px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .close:hover {
+            color: var(--dark);
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        /* Student Detail Styles */
+        .student-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: var(--dark);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            background-color: var(--success);
+        }
+
+        .toast-error {
+            background-color: var(--error);
+        }
+
+        .toast-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .toast-info {
+            background-color: var(--primary);
+        }
+
+        /* Strand Badges */
+        .strand-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-arts { background: #e3f2fd; color: #1565c0; }
+        .badge-stem { background: #f3e5f5; color: #7b1fa2; }
+        .badge-abm { background: #e8f5e8; color: #2e7d32; }
+        .badge-humss { background: #fff3e0; color: #ef6c00; }
+        .badge-gas { background: #fce4ec; color: #c2185b; }
+        .badge-tvl { background: #e0f2f1; color: #00695c; }
+
+        /* Grade Level Badges */
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .student-detail {
+                grid-template-columns: 1fr;
+            }
+
+            .students-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .admin-container {
+                padding: 15px;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
+</head>
+<body class="loading">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-logo">
+            <!-- Use your school logo - make sure the path is correct -->
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}"alt="Ipilan National High School Logo">
+        </div>
+        <div class="preloader-text">
+            Welcome to Ipilan National High School
+        </div>
+        <div class="preloader-spinner"></div>
+        <div class="preloader-progress">
+            <div class="preloader-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+    <!-- Login Section (Initially Visible) -->
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <h1>Ipilan National High School</h1>
+                <p>Admin Dashboard Login</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter your username" required>
+                    <div id="usernameError" class="error-message">Please enter a valid username</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                    <div id="passwordError" class="error-message">Please enter a valid password</div>
+                </div>
+                <button type="submit" class="btn btn-primary login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (Initially Hidden) -->
+    <div id="dashboardSection" style="display: none;">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-nav">
+                <div class="admin-logo">
+                    <h1>Ipilan National High School Admin</h1>
+                </div>
+                <div class="admin-actions">
+                    <a href="{{ url_for('home') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Main Site
+                    </a>
+
+                    <!-- <button id="refreshBtn" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                    
+                     Settings Button 
+                    <button class="btn btn-settings" onclick="openModal()">
+                        <i class="fas fa-cog"></i> Manage Strand
+                    </button>-->
+
+                    <button class="btn btn-info" onclick="openAnnouncementModal()">
+                    <i class="fas fa-bullhorn"></i> Post Announcement
+                    </button>
+
+                    <!-- Logout Button -->
+                    <button id="logoutBtn" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Announcement Modal -->
+        <div id="announcementModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeAnnouncementModal()">&times;</span>
+            <h2>New Announcement</h2>
+
+            <form id="announcementForm" action="{{ url_for('submit_announcement') }}" method="POST">
+            
+            <!-- Author -->
+            <div class="form-group">
+                <label for="author">Author:</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+
+            <!-- Date Posted -->
+            <div class="form-group">
+                <label for="date_post">Date Posted:</label>
+                <input type="datetime-local" id="date_post" name="date_post" required>
+            </div>
+
+            <!-- Viewer -->
+            <div class="form-group">
+            <label for="viewer">Viewer:</label>
+            <select id="viewer" name="viewer" required>
+                <option value="junior">Junior High</option>
+                <option value="senior">Senior High</option>
+                <option value="all">Everyone</option>
+            </select>
+            </div>
+
+            <!-- Information -->
+            <div class="form-group">
+                <label for="info">Information:</label>
+                <textarea id="info" name="info" rows="5" required></textarea>
+            </div>
+
+            <button type="submit">Save Announcement</button>
+            </form>
+        </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="strandModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Manage Strand</h2>
+                <form action="{{ url_for('add_strand') }}" method="POST">
+                    <!-- Grade Dropdown -->
+                    <label for="grade">Grade:</label>
+                    <select id="grade" name="grade" required>
+                        <option value="">Select Grade</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                        <option value="Grade 11">Grade 11</option>
+                        <option value="Grade 12">Grade 12</option>
+                    </select>
+
+                    <!-- Strand Name -->
+                    <label for="strandName">Strand Name:</label>
+                    <input type="text" id="strandName" name="strandName" placeholder="Enter Strand Name" required>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+
+        <main class="admin-container">
+            <!-- Statistics Cards -->
+          <!--  <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Total Registrations</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="artsStudents">0</h3>
+                            <p>Arts & Design Track</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stemStudents">0</h3>
+                            <p>STEM Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="abmStudents">0</h3>
+                            <p>ABM Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="humssStudents">0</h3>
+                            <p>HUMSS Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="gasStudents">0</h3>
+                            <p>GAS Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="tvlStudents">0</h3>
+                            <p>TVL Track</p>
+                        </div>
+                    </div>
+                </div>
+            </section> -->
+
+            <!-- Controls Section -->
+            <section class="controls-section">
+                <div class="controls-grid">
+                    <div class="filter-controls">
+                        <select id="strandFilter">
+                            <option value="">All Strands</option>
+                            <option value="Arts and Design Track">Arts & Design Track</option>
+                            <option value="STEM Strand">STEM</option>
+                            <option value="ABM Strand">ABM</option>
+                            <option value="HUMSS Strand">HUMSS</option>
+                            <option value="GAS Strand">GAS</option>
+                            <option value="TVL Track">TVL Track</option>
+                        </select>
+                        <select id="gradeFilter">
+                            <option value="">All Grade Levels</option>
+                            <option value="Grade 7">Grade 7</option>
+                            <option value="Grade 8">Grade 8</option>
+                            <option value="Grade 9">Grade 9</option>
+                            <option value="Grade 10">Grade 10</option>
+                            <option value="Grade 11">Grade 11</option>
+                            <option value="Grade 12">Grade 12</option>
+                        </select>
+                        <select id="statusFilter">
+                            <option value="">All Statuses</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <select id="sortBy">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="name">Name A-Z</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students Table -->
+            <section class="students-section">
+                <div class="section-header">
+                    <h2>Student Registrations</h2>
+                    <div class="export-actions">
+                         <!-- New Approve and Reject buttons -->
+                        <button id="approveBtn" class="btn btn-success">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button id="rejectBtn" class="btn btn-danger">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                        <button id="deleteBtn" class="btn btn-warning">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="studentsTable" class="students-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th> <!-- master checkbox -->
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Strand</th>
+                                <th>Grade Level</th>
+                                <th>Date of Birth</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Rows populated by JS -->
+                        </tbody>
+                    </table>
+                    <div id="loadingMessage" class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i> Loading student data...
+                    </div> 
+                    <div id="noDataMessage" class="no-data-message" style="display: none;">
+                        <i class="fas fa-info-circle"></i> No student registrations found.
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be populated by JavaScript -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Student Detail Modal -->
+        <div id="studentDetailModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close" onclick="closeStudentModal()">&times;</span>
+                <h2>Student Details</h2>
+                <div id="studentDetailContent">
+                    <!-- Student details will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeConfirmModal()">&times;</span>
+                <h2>Confirm Action</h2>
+                <p id="confirmMessage">Are you sure you want to perform this action?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                    <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toastContainer"></div>
+    </div>
+    <script>
+        // Preloader functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const preloader = document.getElementById('preloader');
+    const progressBar = document.getElementById('progressBar');
+    const body = document.body;
+    
+    let progress = 0;
+    const totalTime = 5000; // Changed from 3000 to 5000 (5 seconds total loading time)
+    const intervalTime = 30; // Update every 30ms
+    const increment = (intervalTime / totalTime) * 100;
+    
+    // Simulate loading progress
+    const loadingInterval = setInterval(() => {
+        progress += increment;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(loadingInterval);
+            
+            // Hide preloader and show content
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+                body.classList.remove('loading');
+                body.classList.add('loaded');
+            }, 500);
+        }
+        progressBar.style.width = progress + '%';
+    }, intervalTime);
+    
+    // Also hide preloader when everything is actually loaded
+    window.addEventListener('load', function() {
+        clearInterval(loadingInterval);
+        progressBar.style.width = '100%';
+        
+        setTimeout(() => {
+            preloader.classList.add('loaded');
+            body.classList.remove('loading');
+            body.classList.add('loaded');
+        }, 500);
+    });
+});
+    </script>
+    <script src="{{ url_for('static', filename='populatetable.js') }}"></script>
+    <script src="{{ url_for('static', filename='filter.js') }}"></script>
+    <script src="{{ url_for('static', filename='announcement.js') }}"></script>
+    <script src="{{ url_for('static', filename='deletepopulate.js') }}"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPILAN NATIONAL HIGH SCHOOL - Where Creativity Meets Innovation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
+</head>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 70px; /* This is the height of your navbar */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .gallery-header {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .gallery-header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .gallery-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .gallery-nav button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .gallery-nav button:hover, .gallery-nav button.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        /* Album Grid */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .album-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .album-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .album-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .album-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .album-card:hover .album-overlay {
+            opacity: 1;
+        }
+
+        .album-overlay i {
+            color: white;
+            font-size: 3rem;
+        }
+
+        .album-info {
+            padding: 1.5rem;
+        }
+
+        .album-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .album-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* 3D Slideshow */
+        .slideshow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .slideshow-container.active {
+            display: flex;
+        }
+
+        .slideshow {
+            width: 80%;
+            height: 80%;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+            display: none;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .slide-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .slide:hover .slide-info {
+            transform: translateY(0);
+        }
+
+        .slideshow-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .slideshow-controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background 0.3s ease;
+        }
+
+        .slideshow-controls button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .close-slideshow {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: background 0.3s ease;
+            z-index: 1001;
+        }
+
+        .close-slideshow:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Footer */
+        .gallery-footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .back-to-home:hover {
+            background: #c0392b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .albums-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .gallery-header h1 {
+                font-size: 2rem;
+            }
+            
+            .slideshow {
+                width: 95%;
+                height: 70%;
+            }
+        }
+    </style>
+</head>
+<body class="loading">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-logo">
+            <!-- Use your school logo - make sure the path is correct -->
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}"alt="Ipilan National High School Logo">
+        </div>
+        <div class="preloader-text">
+            Welcome to Ipilan National High School
+        </div>
+        <div class="preloader-spinner"></div>
+        <div class="preloader-progress">
+            <div class="preloader-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}" 
+                alt="Ipilan National High School Logo" 
+                class="logo-img">
+            <div class="logo-text">INHS</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="dropdown">
+                <a href="{{ url_for('home') }}#about">About Us <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('home') }}#history"><i class="fas fa-landmark"></i> History</a>
+                    <a href="{{ url_for('home') }}#mission"><i class="fas fa-bullseye"></i> Mission & Vision</a>
+                    <a href="{{ url_for('home') }}#values"><i class="fas fa-heart"></i> Values</a>
+                </div>
+            </li>
+            <li><a href="{{ url_for('programs') }}">Programs</a></li>
+            <li><a href="{{ url_for('home') }}#facilities">Facilities</a></li>
+            <li><a href="{{ url_for('faculty') }}">Faculty</a></li>
+            <li><a href="{{ url_for('events') }}">Events & Announcements</a></li>
+            <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+            <li><a href="{{ url_for('home') }}#contact">Contact</a></li>
+        </ul>
+    
+    <!-- Mobile Menu Button -->
+<div class="mobile-menu-btn">
+    <i class="fas fa-bars"></i>
+</div>
+</nav>
+    <!-- Header Section -->
+    <header class="gallery-header">
+        <div class="container">
+            <h1>School Gallery</h1>
+            <p>Explore our collection of memories, events, and achievements at Ipilan National High School</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <div class="container">
+        <div class="gallery-nav">
+            <button class="active" data-category="all">All Albums</button>
+        </div>
+    </div>
+
+    <!-- Albums Grid -->
+<div class="container">
+    <div class="albums-grid">
+        <!-- Album 1 -->
+        <div class="album-card" data-category="events" data-album="municipalmeet">
+            <div class="album-image" style="background-image: url('{{ url_for('static', filename='resources/Municipal meet 2025.jpg') }}')">
+                <div class="album-overlay">
+                    <i class="fas fa-images"></i>
+                </div>
+            </div>
+            <div class="album-info">
+                <h3>Munipal Meet 2025</h3>
+                <p>INHS Delagates</p>
+            </div>
+        </div>
+
+            <!-- Album 2 -->
+            <div class="album-card" data-category="academics" data-album="science-fair">
+                <div class="album-image" style="background-image: url('{{ url_for('static', filename='resources/scmth.jpg') }}')">
+                    <div class="album-overlay">
+                        <i class="fas fa-images"></i>
+                    </div>
+                </div>
+                <div class="album-info">
+                    <h3>Science Fair</h3>
+                    <p>Innovative projects and experiments by our students</p>
+                </div>
+            </div>
+
+            <!-- Album 3 -->
+            <div class="album-card" data-category="sports" data-album="buwanngwika2025">
+                <div class="album-image" style="background-image: url('{{ url_for('static', filename='resources/bw25.png') }}')">
+                    <div class="album-overlay">
+                        <i class="fas fa-images"></i>
+                    </div>
+                </div>
+                <div class="album-info">
+                    <h3>Buwan ng Wika 2025</h3>
+                    <p>Competition, teamwork, and school spirit in action</p>
+                </div>
+            </div>
+
+            <!-- Album 4 -->
+            <div class="album-card" data-category="facilities" data-album="nutmonth">
+                <div class="album-image" style="background-image: url('{{ url_for('static', filename='resources/nutrition month.jpg') }}')">
+                    <div class="album-overlay">
+                        <i class="fas fa-images"></i>
+                    </div>
+                </div>
+                <div class="album-info">
+                    <h3>Nutrition Month</h3>
+                    <p>Explore our state-of-the-art facilities and learning spaces</p>
+                </div>
+            </div>
+
+            <!-- Album 5 -->
+            <div class="album-card" data-category="events" data-album="brigada">
+                <div class="album-image" style="background-image: url('{{ url_for('static', filename='resources/bgd.jpg') }}')">
+                    <div class="album-overlay">
+                        <i class="fas fa-images"></i>
+                    </div>
+                </div>
+                <div class="album-info">
+                    <h3>Brigada Eskwela</h3>
+                    <p>Celebrating diversity and cultural heritage</p>
+                </div>
+            </div>
+
+            <!-- Album 6 -->
+            <div class="album-card" data-category="academics" data-album="cu-ac">
+                <div class="album-image" style="background-image: url('{{ url_for('static', filename='resources/ca.jpg') }}')">
+                    <div class="album-overlay">
+                        <i class="fas fa-images"></i>
+                    </div>
+                </div>
+                <div class="album-info">
+                    <h3>Other Curricular Activity</h3>
+                    <p>Creative works by our talented art students</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Slideshow -->
+    <div class="slideshow-container">
+        <button class="close-slideshow">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="slideshow">
+            <!-- Slides will be dynamically inserted here -->
+        </div>
+        <div class="slideshow-controls">
+            <button class="prev-slide">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="next-slide">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gallery-footer">
+        <div class="container">
+            <p>&copy; 2025 Ipilan National High School. All rights reserved.</p>
+            <a href="{{ url_for('home') }}" class="back-to-home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Album data with images
+const albums = {
+    'municipalmeet': {
+        title: 'Municipal Meet 2025',
+        images: [
+            { src: "{{ url_for('static', filename='resources/basketball_girls.jpg') }}", caption: 'Basketball Girls' },
+            { src: "{{ url_for('static', filename='resources/bdmntn.jpg') }}", caption: 'Badminton' },
+            { src: "{{ url_for('static', filename='resources/futboys.jpg') }}", caption: 'Football' },
+            { src: "{{ url_for('static', filename='resources/atlete boys.jpg') }}", caption: 'Athletic Boys' },
+            { src: "{{ url_for('static', filename='resources/atlethics.jpg') }}", caption: 'Atlethics' },
+            { src: "{{ url_for('static', filename='resources/hjinhs.jpg') }}", caption: 'High Jump Girls' },
+            { src: "{{ url_for('static', filename='resources/takraw boys.jpg') }}", caption: 'Takraw Boys' },
+        ]
+    },
+            'science-fair': {
+                title: 'Science Fair',
+                images: [
+                    { src: "{{ url_for('static', filename='resources/sf1.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf22.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf3.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf4.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf5.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf6.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf7.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf8.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf9.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/sf10.jpg') }}" },
+                ]
+            },
+            'buwanngwika2025': {
+                title: 'Buwan ng Wika 2025',
+                images: [
+                    { src: "{{ url_for('static', filename='resources/bnw1.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw2.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw3.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw4.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw5.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw6.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw7.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw8.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw9.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bnw10.jpg') }}" },
+                ]
+            },
+            'nutmonth': {
+                title: 'Nutrition Month',
+                images: [
+                    { src: "{{ url_for('static', filename='resources/nt1.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt2.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt3.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt4.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt5.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt6.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt7.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt8.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt9.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/nt10.jpg') }}" },
+                ]
+            },
+            'brigada': {
+                title: 'Brigada Eskwela',
+                images: [
+                    { src: "{{ url_for('static', filename='resources/bdg1.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg2.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg3.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg4.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg5.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg6.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg7.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg8.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg9.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/bdg10.jpg') }}" },
+                ]
+            },
+            'cu-ac': {
+                title: 'Other Curricular Activity',
+                images: [
+                    { src: "{{ url_for('static', filename='resources/ca1.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca2.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca3.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca4.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca5.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca6.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca7.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca8.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca9.jpg') }}" },
+                    { src: "{{ url_for('static', filename='resources/ca10.jpg') }}" },
+                ]
+            }
+        };
+
+        // Preloader functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const preloader = document.getElementById('preloader');
+    const progressBar = document.getElementById('progressBar');
+    const body = document.body;
+    
+    let progress = 0;
+    const totalTime = 5000; // Changed from 3000 to 5000 (5 seconds total loading time)
+    const intervalTime = 30; // Update every 30ms
+    const increment = (intervalTime / totalTime) * 100;
+    
+    // Simulate loading progress
+    const loadingInterval = setInterval(() => {
+        progress += increment;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(loadingInterval);
+            
+            // Hide preloader and show content
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+                body.classList.remove('loading');
+                body.classList.add('loaded');
+            }, 500);
+        }
+        progressBar.style.width = progress + '%';
+    }, intervalTime);
+    
+    // Also hide preloader when everything is actually loaded
+    window.addEventListener('load', function() {
+        clearInterval(loadingInterval);
+        progressBar.style.width = '100%';
+        
+        setTimeout(() => {
+            preloader.classList.add('loaded');
+            body.classList.remove('loading');
+            body.classList.add('loaded');
+        }, 500);
+    });
+});
+
+// Ensure video plays automatically and loops
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('heroVideo');
+    
+    // Force video to play (for some browser restrictions)
+    video.play().catch(function(error) {
+        console.log('Video autoplay failed:', error);
+        // Show play button if autoplay is blocked
+        showPlayButton();
+    });
+    
+    // Ensure video loops properly
+    video.addEventListener('ended', function() {
+        video.currentTime = 0;
+        video.play();
+    });
+    
+    // Handle visibility change - restart video when page becomes visible
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden && video.paused) {
+            video.play();
+        }
+    });
+});
+
+        // DOM Elements
+        const albumCards = document.querySelectorAll('.album-card');
+        const categoryButtons = document.querySelectorAll('.gallery-nav button');
+        const slideshowContainer = document.querySelector('.slideshow-container');
+        const slideshow = document.querySelector('.slideshow');
+        const closeSlideshowBtn = document.querySelector('.close-slideshow');
+        const prevSlideBtn = document.querySelector('.prev-slide');
+        const nextSlideBtn = document.querySelector('.next-slide');
+
+        // Current slideshow state
+        let currentAlbum = null;
+        let currentSlideIndex = 0;
+
+        // Filter albums by category
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active button
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                const category = button.dataset.category;
+                
+                // Show/hide albums based on category
+                albumCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Open slideshow when album is clicked
+        albumCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const albumId = card.dataset.album;
+                openSlideshow(albumId);
+            });
+        });
+
+        // Open slideshow function
+        function openSlideshow(albumId) {
+            currentAlbum = albumId;
+            currentSlideIndex = 0;
+            
+            // Clear previous slides
+            slideshow.innerHTML = '';
+            
+            // Add slides for the selected album
+            albums[albumId].images.forEach((image, index) => {
+                const slide = document.createElement('div');
+                slide.className = `slide ${index === 0 ? 'active' : ''}`;
+                
+                slide.innerHTML = `
+                    <img src="${image.src}" alt="${image.caption}" class="slide-image">
+                    <div class="slide-info">
+                        <h3>${albums[albumId].title}</h3>
+                        <p>${image.caption}</p>
+                    </div>
+                `;
+                
+                slideshow.appendChild(slide);
+            });
+            
+            // Show slideshow
+            slideshowContainer.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close slideshow
+        closeSlideshowBtn.addEventListener('click', () => {
+            slideshowContainer.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Navigate slides
+        prevSlideBtn.addEventListener('click', showPrevSlide);
+        nextSlideBtn.addEventListener('click', showNextSlide);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!slideshowContainer.classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft') {
+                showPrevSlide();
+            } else if (e.key === 'ArrowRight') {
+                showNextSlide();
+            } else if (e.key === 'Escape') {
+                slideshowContainer.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Show previous slide
+        function showPrevSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length === 0) return;
+            
+            slides[currentSlideIndex].classList.remove('active');
+            currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+            slides[currentSlideIndex].classList.add('active');
+        }
+
+        // Show next slide
+        function showNextSlide() {
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length === 0) return;
+            
+            slides[currentSlideIndex].classList.remove('active');
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            slides[currentSlideIndex].classList.add('active');
+        }
+
+        // Close slideshow when clicking outside
+        slideshowContainer.addEventListener('click', (e) => {
+            if (e.target === slideshowContainer) {
+                slideshowContainer.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>

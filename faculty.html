@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Directory - Ipilan National High School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='faculty.css') }}">
+    <style>
+        /* Enhanced Principal Section Styles */
+        .principal-section {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            padding: 2rem 1rem;
+        }
+        
+        .principal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 2.5rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.8rem;
+        }
+        
+        .principal-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            border-radius: 2px;
+        }
+        
+        /* Principal Card using faculty-card styling */
+        .principal-card-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .principal-card-wrapper .faculty-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e9ecef;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .principal-card-wrapper .faculty-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #1a2a6c;
+        }
+        
+        /* Special ribbon for principal */
+        .principal-card-wrapper::before {
+            content: 'PRINCIPAL';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: linear-gradient(135deg, #b21f1f, #1a2a6c);
+            color: white;
+            padding: 8px 35px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transform: rotate(45deg);
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Principal image styling */
+        .principal-card-wrapper .faculty-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .principal-card-wrapper .faculty-image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .principal-card-wrapper .faculty-card:hover .faculty-image img {
+            transform: scale(1.1);
+        }
+        
+        /* Principal info styling */
+        .principal-card-wrapper .faculty-info {
+            padding: 2rem;
+            background: white;
+        }
+        
+        .principal-card-wrapper .faculty-name {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .principal-card-wrapper .faculty-position {
+            font-size: 1.3rem;
+            color: #db3434;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+        
+        .principal-card-wrapper .faculty-position::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+        }
+        
+        .principal-card-wrapper .faculty-subjects {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Principal qualifications */
+        .principal-card-wrapper .faculty-qualifications {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+        
+        .principal-card-wrapper .qualification-tag {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #1a2a6c;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .principal-card-wrapper .qualification-tag:hover {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(26, 42, 108, 0.2);
+        }
+        
+        /* Principal bio */
+        .principal-card-wrapper .faculty-bio {
+            line-height: 1.8;
+            color: #495057;
+            font-size: 1.05rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+        }
+        
+        /* View profile button */
+        .principal-card-wrapper .view-profile {
+            display: inline-block;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        
+        .principal-card-wrapper .view-profile:hover {
+            background: linear-gradient(135deg, #b21f1f, #1a2a6c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 42, 108, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .principal-card-wrapper .faculty-card {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .principal-card-wrapper .faculty-image {
+                flex: 0 0 300px;
+                border-radius: 12px 0 0 12px;
+                height: 350px;
+            }
+            
+            .principal-card-wrapper .faculty-image img {
+                height: 100%;
+            }
+            
+            .principal-card-wrapper .faculty-info {
+                flex: 1;
+                text-align: left;
+                padding: 2rem 3rem;
+            }
+            
+            .principal-card-wrapper .faculty-bio {
+                text-align: left;
+                padding: 0;
+            }
+            
+            .principal-card-wrapper .faculty-qualifications {
+                justify-content: flex-start;
+            }
+            
+            .principal-card-wrapper .faculty-position::after {
+                left: 0;
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .principal-card-wrapper::before {
+                top: 15px;
+                right: -25px;
+                padding: 6px 30px;
+                font-size: 0.8rem;
+            }
+            
+            .principal-card-wrapper .faculty-name {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="loading">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-logo">
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}" alt="Ipilan National High School Logo">
+        </div>
+        <div class="preloader-text">
+            Welcome to Ipilan National High School
+        </div>
+        <div class="preloader-spinner"></div>
+        <div class="preloader-progress">
+            <div class="preloader-progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}" 
+                alt="Ipilan National High School Logo" 
+                class="logo-img">
+            <div class="logo-text">INHS</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="dropdown">
+                <a href="{{ url_for('home') }}#about">About Us <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('home') }}#history"><i class="fas fa-landmark"></i> History</a>
+                    <a href="{{ url_for('home') }}#mission"><i class="fas fa-bullseye"></i> Mission & Vision</a>
+                    <a href="{{ url_for('home') }}#values"><i class="fas fa-heart"></i> Values</a>
+                </div>
+            </li>
+            <li><a href="{{ url_for('programs') }}">Programs</a></li>
+            <li><a href="{{ url_for('home') }}#facilities">Facilities</a></li>
+            <li><a href="{{ url_for('faculty') }}">Faculty</a></li>
+            <li><a href="{{ url_for('events') }}">Events & Announcements</a></li>
+            <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+            <li><a href="{{ url_for('home') }}#contact">Contact</a></li>
+        </ul>
+        
+        <!-- Mobile Menu Button -->
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Faculty Directory Content with Banner Logo -->
+    <header class="faculty-header">
+        <div class="container">
+            <div class="header-banner">
+                <div class="logo-section">
+                    <img src="{{ url_for('static', filename='resources/INHS Logo.png') }}" 
+                         alt="Ipilan National High School Logo" 
+                         class="banner-logo">
+                </div>
+                <div class="header-content">
+                    <h1 class="school-title">Ipilan National High School</h1>
+                    <div class="school-motto">Where Creativity Meets Innovation</div>
+                    <h2 class="page-title">Faculty Directory</h2>
+                    <p class="subtitle">Meet our dedicated team of educators who are committed to shaping the future leaders of tomorrow</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="container">
+        <!-- Principal Section - Now matches faculty card styling -->
+        <section class="principal-section">
+            <h2 class="principal-title">School Principal</h2>
+            <div class="principal-card-wrapper">
+                <div class="faculty-card" id="principalCard" data-faculty-id="principal">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/principal.jpg') }}" 
+                             alt="School Principal" 
+                             class="faculty-img">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. Leah G. Rondael</h3>
+                        <p class="faculty-position">School Principal</p>
+                        <p class="faculty-subjects">Educational Leadership, Administration</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">PhD in Educational Management</span>
+                            <span class="qualification-tag">MA in Administration</span>
+                            <span class="qualification-tag">20+ Years Experience</span>
+                            <span class="qualification-tag">Leadership Certification</span>
+                        </div>
+                        <p class="faculty-bio">
+                            With over 20 years of experience in educational leadership and administration, 
+                            Mrs. Leah G. Rondael is dedicated to creating a nurturing learning environment that fosters 
+                            academic excellence and personal growth. Her visionary leadership has guided 
+                            Ipilan National High School to numerous achievements and recognitions. She is 
+                            committed to empowering both students and faculty to reach their full potential.
+                        </p>
+                        <a href="#" class="view-profile" data-faculty-id="principal">View Full Profile</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Faculty Tabs -->
+        <div class="faculty-tabs">
+            <button class="faculty-tab active" data-tab="junior">Junior High School</button>
+            <button class="faculty-tab" data-tab="senior">Senior High School</button>
+        </div>
+        
+        <!-- Junior High School Faculty -->
+        <div class="faculty-content active" id="junior-faculty">
+            <h2 class="section-title">Junior High School Faculty</h2>
+            <div class="faculty-grid">
+                <!-- Grade 7 Coordinator -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/japhet.jpg') }}" alt="Grade 7 Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mr. Japhet D. Asuela</h3>
+                        <p class="faculty-position">Grade 7 Coordinator</p>
+                        <p class="faculty-subjects">Mathematics, Science</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MSc in Mathematics</span>
+                            <span class="qualification-tag">BSEd Major in Science</span>
+                        </div>
+                        <p class="faculty-bio">Specializes in Mathematics and Science with 6 years of teaching experience, focusing on foundational concepts.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- Grade 8 Coordinator -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/maryjean.jpg') }}" alt="Grade 8 Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. Mary Jean C. Valle</h3>
+                        <p class="faculty-position">Grade 8 Coordinator</p>
+                        <p class="faculty-subjects">English, Social Studies</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MA in English</span>
+                            <span class="qualification-tag">BSEd Social Sciences</span>
+                        </div>
+                        <p class="faculty-bio">Expert in English and Social Studies with focus on student development and critical thinking skills.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- Grade 9 Coordinator -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/benjou.jpg') }}" alt="Grade 9 Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Benjou C. Villacorte</h3>
+                        <p class="faculty-position">Grade 9 Coordinator</p>
+                        <p class="faculty-subjects">Technology and Livelihood Education</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">BS in Industrial Technology</span>
+                            <span class="qualification-tag">TESDA Certified</span>
+                        </div>
+                        <p class="faculty-bio">Specializes in Technology and Livelihood Education with industry experience, bringing real-world applications to the classroom.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- Grade 10 Coordinator -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/henry.jpg') }}" alt="Grade 10 Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mr. Henry A. Martines</h3>
+                        <p class="faculty-position">Grade 10 Coordinator</p>
+                        <p class="faculty-subjects">Junior High School PE Teacher</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MA in Guidance and Counseling</span>
+                            <span class="qualification-tag">BS in Psychology</span>
+                        </div>
+                        <p class="faculty-bio">Focuses on career guidance and preparation for senior high school, helping students discover their paths.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- Filipino Department Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/joan.jpg') }}" alt="Filipino Department Head">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. Joan C. Valones</h3>
+                        <p class="faculty-position">Filipino Department Head</p>
+                        <p class="faculty-subjects">Filipino Language, Literature</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MA in Filipino</span>
+                            <span class="qualification-tag">BSEd Major in Filipino</span>
+                        </div>
+                        <p class="faculty-bio">Versatile educator with expertise in Filipino language and literature, passionate about cultural preservation.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/charmaine.jpg') }}" alt="Araling Panlipunan Teacher">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Ms. Charmaine Y. Madrona</h3>
+                        <p class="faculty-position">Araling Panlipunan Teacher</p>
+                        <p class="faculty-subjects">Araling Panlipunan, Philippine History, Social Studies</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MA in History</span>
+                            <span class="qualification-tag">BSEd Social Sciences</span>
+                            <span class="qualification-tag">Cultural Heritage Specialist</span>
+                        </div>
+                        <p class="faculty-bio">Dedicated Araling Panlipunan educator with expertise in Philippine history, culture, and social sciences. Passionate about making history engaging and relevant to modern students.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Senior High School Faculty -->
+        <div class="faculty-content" id="senior-faculty">
+            <h2 class="section-title">Senior High School Faculty</h2>
+            <div class="faculty-grid">
+                <!-- STEM Strand Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/joahnna.jpg') }}" alt="STEM Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. Joahnna Jean G. Escalana</h3>
+                        <p class="faculty-position">STEM Strand Coordinator</p>
+                        <p class="faculty-subjects">Physics, Advanced Mathematics</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MSc in Physics</span>
+                            <span class="qualification-tag">BSEd Major in Science</span>
+                        </div>
+                        <p class="faculty-bio">Specializes in Physics and Advanced Mathematics with research background, preparing students for STEM careers.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- HUMSS Strand Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/edel.jpg') }}" alt="HUMSS Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mr. Edel C. Geraldiso</h3>
+                        <p class="faculty-position">HUMSS Strand Coordinator</p>
+                        <p class="faculty-subjects">Social Sciences, Philippine History</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MA in History</span>
+                            <span class="qualification-tag">BSEd Social Sciences</span>
+                        </div>
+                        <p class="faculty-bio">Expert in Social Sciences with focus on Philippine History and Culture, inspiring students to understand society.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- ABM Strand Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/junnalyn.jpg') }}" alt="ABM Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. Junnalyn H. Paragas</h3>
+                        <p class="faculty-position">ABM Strand Coordinator</p>
+                        <p class="faculty-subjects">Business, Accountancy</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MBA</span>
+                            <span class="qualification-tag">BS Accountancy</span>
+                        </div>
+                        <p class="faculty-bio">Business and Accountancy expert with industry experience, developing business acumen in students.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- TVL Strand Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/reno.jpg') }}" alt="TVL Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mr. Reno V. Tomesa</h3>
+                        <p class="faculty-position">TVL Strand Coordinator</p>
+                        <p class="faculty-subjects">Technical-Vocational Education</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">TESDA Certified</span>
+                            <span class="qualification-tag">BS Industrial Technology</span>
+                        </div>
+                        <p class="faculty-bio">Technical and vocational training specialist with industry certifications, preparing students for skilled careers.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- GAS Strand Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/cristina.jpg') }}" alt="GAS Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. Cristina U. Lagrada</h3>
+                        <p class="faculty-position">GAS Strand Coordinator</p>
+                        <p class="faculty-subjects">Multiple Disciplines</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MA in Education</span>
+                            <span class="qualification-tag">BS in Psychology</span>
+                        </div>
+                        <p class="faculty-bio">Versatile educator with expertise in multiple academic disciplines, providing flexible career guidance.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+
+                <!-- Arts and Design Strand Head -->
+                <div class="faculty-card">
+                    <div class="faculty-image">
+                        <img src="{{ url_for('static', filename='resources/layds.jpg') }}" alt="Arts and Design Coordinator">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Mrs. LEIDEN M. BALMONTE</h3>
+                        <p class="faculty-position">Arts and Design Coordinator</p>
+                        <p class="faculty-subjects">Visual Arts, Performing Arts</p>
+                        <div class="faculty-qualifications">
+                            <span class="qualification-tag">MFA in Visual Arts</span>
+                            <span class="qualification-tag">BFA in Painting</span>
+                        </div>
+                        <p class="faculty-bio">Professional artist and educator with exhibitions in national galleries, nurturing creative expression.</p>
+                        <a href="#" class="view-profile">View Full Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Faculty Details Modal -->
+    <div class="faculty-modal" id="facultyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalName">Faculty Name</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modalImage" src="" alt="Faculty Photo">
+                </div>
+                <div class="modal-details">
+                    <p class="modal-position" id="modalPosition">Position</p>
+                    <p class="modal-subjects" id="modalSubjects">Subjects</p>
+                    
+                    <div class="modal-section">
+                        <h3>Qualifications</h3>
+                        <div class="modal-qualifications" id="modalQualifications">
+                            <!-- Qualifications will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3>About</h3>
+                        <p class="modal-bio" id="modalBio">Bio information will appear here.</p>
+                    </div>
+                    
+                    <div class="modal-section">
+                        <h3>Contact Information</h3>
+                        <div class="modal-contact" id="modalContact">
+                            <!-- Contact info will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <div class="logo-container">
+                        <div class="logo-img">INHS</div>
+                        <h3>Ipilan National High School</h3>
+                    </div>
+                    <p>Where creativity meets technology and culture. Shaping the future through education and innovation since 1960.</p>
+                    
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('home') }}#about">About</a></li>
+                        <li><a href="{{ url_for('home') }}#history">History</a></li>
+                        <li><a href="{{ url_for('home') }}#mission">Mission & Vision</a></li>
+                        <li><a href="{{ url_for('home') }}#facilities">Facilities</a></li>
+                        <li><a href="{{ url_for('faculty') }}">Faculty</a></li>
+                        <li><a href="{{ url_for('events') }}">Events & Announcements</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Education Boulevard, Knowledge City</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@inhs.edu</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 8:00 AM - 6:00 PM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Ipilan National High School. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='faculty.js') }}"></script>
+<script>
+    // Define facultyData in HTML where Flask can process template syntax
+    const facultyData = {
+        principal: {
+            id: 0,
+            name: "Mrs. Leah G. Rondael",
+            position: "School Principal",
+            subjects: "Educational Leadership, Administration",
+            image: "{{ url_for('static', filename='resources/principal.jpg') }}",
+            qualifications: ["PhD in Educational Management", "MA in Administration", "20+ Years Experience", "Educational Leadership Certification", "School Management Specialist"],
+            bio: "With over 20 years of experience in educational leadership and administration, Dr. Santos is dedicated to creating a nurturing learning environment that fosters academic excellence and personal growth. Her visionary leadership has guided Ipilan National High School to numerous achievements and recognitions. Under her guidance, the school has achieved:\n• 95% student graduation rate\n• 30% increase in college admissions\n• National awards for innovative teaching methods\n• Enhanced community partnerships",
+            contact: {
+                email: "leah24@gmail.com",
+                phone: "09173016882",
+                room: "Principal's Office, Main Building",
+                officeHours: "Mon-Fri: 8:00 AM - 5:00 PM"
+            }
+        },
+        junior: [
+            {
+                id: 1,
+                name: "Mr. Japhet D. Asuela",
+                position: "Grade 7 Coordinator",
+                subjects: "Mathematics, Science",
+                image: "{{ url_for('static', filename='resources/japhet.jpg') }}",
+                qualifications: ["MSc in Mathematics", "BSEd Major in Science", "15 Years Teaching Experience"],
+                bio: "Specializing in Mathematics and Science with 15 years of teaching experience, Mr. Rodriguez focuses on developing strong foundational concepts through hands-on learning and real-world applications. He has developed innovative math programs that have improved student performance by 40%.",
+                contact: {
+                    email: "japhet@gmail.com",
+                    phone: "09173016882",
+                    room: "Room 101"
+                }
+            },
+            {
+                id: 2,
+                name: "Mrs. Mary Jean C. Valle",
+                position: "Grade 8 Coordinator",
+                subjects: "English, Social Studies",
+                image: "{{ url_for('static', filename='resources/maryjean.jpg') }}",
+                qualifications: ["MA in English", "BSEd Social Sciences", "TESOL Certified"],
+                bio: "Expert in English and Social Studies with focus on student development and critical thinking skills. Ms. Cruz incorporates project-based learning to make lessons engaging and relevant.",
+                contact: {
+                    email: "maryjeans@gmail.com",
+                    phone: "09173016882",
+                    room: "Room 102"
+                }
+            },
+            {
+                id: 3,
+                name: "Benjou C. Villacorte",
+                position: "Grade 9 Coordinator",
+                subjects: "Technology and Livelihood Education",
+                image: "{{ url_for('static', filename='resources/benjou.jpg') }}",
+                qualifications: ["BS in Industrial Technology", "TESDA Certified", "Industry Experience"],
+                bio: "Specializes in Technology and Livelihood Education with industry experience, bringing real-world applications to the classroom. Mr. Lim focuses on practical skills that prepare students for vocational paths.",
+                contact: {
+                    email: "benjou@gmail.com",
+                    phone: "09173016882",
+                    room: "Workshop Room"
+                }
+            },
+            {
+                id: 4,
+                name: "Mr. Henry A. Martines",
+                position: "Grade 10 Coordinator",
+                subjects: "Junior High School PE Teacher",
+                image: "{{ url_for('static', filename='resources/henry.jpg') }}",
+                qualifications: ["MA in Guidance and Counseling", "BS in Psychology", "Career Development Specialist"],
+                bio: "Focuses on career guidance and preparation for senior high school, helping students discover their paths through personalized counseling and aptitude assessments.",
+                contact: {
+                    email: "henrymartins@gmail.com",
+                    phone: "09173016882",
+                    room: "Guidance Office"
+                }
+            },
+            {
+                id: 5,
+                name: "Mrs. Joan C. Valones",
+                position: "Filipino Department Head",
+                subjects: "Filipino Language, Literature",
+                image: "{{ url_for('static', filename='resources/joan.jpg') }}",
+                qualifications: ["MA in Filipino", "BSEd Major in Filipino", "Cultural Studies"],
+                bio: "Versatile educator with expertise in Filipino language and literature, passionate about cultural preservation and modern Filipino identity. Integrates traditional and contemporary teaching methods.",
+                contact: {
+                    email: "joancalaorv@gmail.com",
+                    phone: "09173016882",
+                    room: "Room 103"
+                }
+            },
+            {
+                id: 12, // Changed from 6 to 12 (since senior uses 6-11)
+                name: "Ms. Charmaine Y. Madrona",
+                position: "Araling Panlipunan Teacher",
+                subjects: "Araling Panlipunan, Philippine History, Social Studies",
+                image: "{{ url_for('static', filename='resources/charmaine.jpg') }}",
+                qualifications: ["MA in History", "BSEd Social Sciences", "Cultural Heritage Specialist", "10+ Years Teaching Experience"],
+                bio: "Dedicated Araling Panlipunan educator with expertise in Philippine history, culture, and social sciences. Passionate about making history engaging and relevant to modern students. Specializes in:\n• Philippine History and Culture\n• Social Sciences Education\n• Cultural Heritage Preservation\n• Interactive Teaching Methods",
+                contact: {
+                    email: "charmainemadrona@gmail.com",
+                    phone: "09173016882",
+                    room: "Social Studies Room 105"
+                }
+            },    
+        ],
+        senior: [
+            {
+                id: 6,
+                name: "Mrs. Joahnna Jean G. Escalana",
+                position: "STEM Strand Coordinator",
+                subjects: "Physics, Advanced Mathematics",
+                image: "{{ url_for('static', filename='resources/joahnna.jpg') }}",
+                qualifications: ["MSc in Physics", "BSEd Major in Science", "Research Background"],
+                bio: "Specializes in Physics and Advanced Mathematics with research background, preparing students for STEM careers through rigorous academic training and research opportunities.",
+                contact: {
+                    email: "joahnnaescalana@gmail.com",
+                    phone: "09173016882",
+                    room: "Science Lab 201"
+                }
+            },
+            {
+                id: 7,
+                name: "Mr. Edel C. Geraldiso",
+                position: "HUMSS Strand Coordinator",
+                subjects: "Social Sciences, Philippine History",
+                image: "{{ url_for('static', filename='resources/edel.jpg') }}",
+                qualifications: ["MA in History", "BSEd Social Sciences", "Cultural Studies"],
+                bio: "Expert in Social Sciences with focus on Philippine History and Culture, inspiring students to understand society and human behavior through critical analysis and community engagement.",
+                contact: {
+                    email: "edelgeraldiso",
+                    phone: "09173016882",
+                    room: "Room 202"
+                }
+            },
+            {
+                id: 8,
+                name: "Mrs. Junnalyn H. Paragas",
+                position: "ABM Strand Coordinator",
+                subjects: "Business, Accountancy",
+                image: "{{ url_for('static', filename='resources/junnalyn.jpg') }}",
+                qualifications: ["MBA", "BS Accountancy", "Industry Experience"],
+                bio: "Business and Accountancy expert with industry experience, developing business acumen and management skills in students through case studies and entrepreneurial projects.",
+                contact: {
+                    email: "junnalynparagas@gmail.com",
+                    phone: "09173016882",
+                    room: "Business Lab 203"
+                }
+            },
+            {
+                id: 9,
+                name: "Mr. Reno V. Tomesa",
+                position: "TVL Strand Coordinator",
+                subjects: "Technical-Vocational Education",
+                image: "{{ url_for('static', filename='resources/reno.jpg') }}",
+                qualifications: ["TESDA Certified", "BS Industrial Technology", "Industry Partnerships"],
+                bio: "Technical and vocational training specialist with industry certifications, preparing students for skilled careers through hands-on training and industry partnerships.",
+                contact: {
+                    email: "renovillareal@gmail.com",
+                    phone: "09173016882",
+                    room: "TVL Workshop"
+                }
+            },
+            {
+                id: 10,
+                name: "Mrs. Cristina U. Lagrada",
+                position: "GAS Strand Coordinator",
+                subjects: "Multiple Disciplines",
+                image: "{{ url_for('static', filename='resources/cristina.jpg') }}",
+                qualifications: ["MA in Education", "BS in Psychology", "Multiple Subject Expertise"],
+                bio: "Versatile educator with expertise in multiple academic disciplines, providing flexible career guidance and personalized learning paths for students exploring various fields.",
+                contact: {
+                    email: "cristinauretal@gmail.com",
+                    phone: "09173016882",
+                    room: "Room 204"
+                }
+            },
+            {
+                id: 11,
+                name: "Mrs. LEIDEN M. BALMONTE",
+                position: "Arts and Design Coordinator",
+                subjects: "Visual Arts, Performing Arts",
+                image: "{{ url_for('static', filename='resources/layds.jpg') }}",
+                qualifications: ["MFA in Visual Arts", "BFA in Painting", "Exhibition Experience"],
+                bio: "Professional artist and educator with exhibitions in national galleries, nurturing creative expression and artistic talent through diverse media and performance opportunities.",
+                contact: {
+                    email: "laydzmbalmonte@inhs.edu",
+                    phone: "09173016882",
+                    room: "Arts Studio 205"
+                }
+            }
+        ]
+    };
+        // Preloader functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            const progressBar = document.getElementById('progressBar');
+            const body = document.body;
+            
+            let progress = 0;
+            const totalTime = 5000; // Changed from 3000 to 5000 (5 seconds total loading time)
+            const intervalTime = 30; // Update every 30ms
+            const increment = (intervalTime / totalTime) * 100;
+            
+            // Simulate loading progress
+            const loadingInterval = setInterval(() => {
+                progress += increment;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // Hide preloader and show content
+                    setTimeout(() => {
+                        preloader.classList.add('loaded');
+                        body.classList.remove('loading');
+                        body.classList.add('loaded');
+                    }, 500);
+                }
+                progressBar.style.width = progress + '%';
+            }, intervalTime);
+            
+            // Also hide preloader when everything is actually loaded
+            window.addEventListener('load', function() {
+                clearInterval(loadingInterval);
+                progressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    preloader.classList.add('loaded');
+                    body.classList.remove('loading');
+                    body.classList.add('loaded');
+                }, 500);
+            });
+        });
+
+        // Ensure video plays automatically and loops
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('heroVideo');
+            
+            // Force video to play (for some browser restrictions)
+            video.play().catch(function(error) {
+                console.log('Video autoplay failed:', error);
+                // Show play button if autoplay is blocked
+                showPlayButton();
+            });
+            
+            // Ensure video loops properly
+            video.addEventListener('ended', function() {
+                video.currentTime = 0;
+                video.play();
+            });
+            
+            // Handle visibility change - restart video when page becomes visible
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && video.paused) {
+                    video.play();
+                }
+            });
+        });
+        
+        // Add click handler for principal card to open modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const principalCard = document.getElementById('principalCard');
+            const viewProfileBtn = principalCard.querySelector('.view-profile');
+            
+            viewProfileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Prepare principal data for modal
+                const principalData = {
+                    name: "Mrs. Leah G. Rondael",
+                    position: "School Principal",
+                    subjects: "Educational Leadership, Administration",
+                    qualifications: [
+                        "PhD in Educational Management",
+                        "MA in Administration", 
+                        "20+ Years Experience",
+                        "Leadership Certification"
+                    ],
+                    bio: "With over 20 years of experience in educational leadership and administration, Dr. Santos is dedicated to creating a nurturing learning environment that fosters academic excellence and personal growth. Her visionary leadership has guided Ipilan National High School to numerous achievements and recognitions. She is committed to empowering both students and faculty to reach their full potential.",
+                    image: "{{ url_for('static', filename='resources/principal.jpg') }}",
+                    contact: [
+                        { type: "email", value: "leah24@gmail.com" },
+                        { type: "phone", value: "09173016882" },
+                        { type: "office", value: "Main Administration Building, Room 101" }
+                    ]
+                };
+                
+                // Update modal with principal data
+                document.getElementById('modalName').textContent = principalData.name;
+                document.getElementById('modalPosition').textContent = principalData.position;
+                document.getElementById('modalSubjects').textContent = principalData.subjects;
+                document.getElementById('modalBio').textContent = principalData.bio;
+                
+                // Update modal image
+                const modalImage = document.getElementById('modalImage');
+                modalImage.src = principalData.image;
+                modalImage.alt = principalData.name;
+                
+                // Update qualifications
+                const qualificationsContainer = document.getElementById('modalQualifications');
+                qualificationsContainer.innerHTML = '';
+                principalData.qualifications.forEach(qual => {
+                    const span = document.createElement('span');
+                    span.className = 'qualification-tag';
+                    span.textContent = qual;
+                    qualificationsContainer.appendChild(span);
+                });
+                
+                // Update contact info
+                const contactContainer = document.getElementById('modalContact');
+                contactContainer.innerHTML = '';
+                principalData.contact.forEach(contact => {
+                    const div = document.createElement('div');
+                    div.className = 'contact-item';
+                    
+                    let icon = '';
+                    switch(contact.type) {
+                        case 'email':
+                            icon = '<i class="fas fa-envelope"></i>';
+                            break;
+                        case 'phone':
+                            icon = '<i class="fas fa-phone"></i>';
+                            break;
+                        case 'office':
+                            icon = '<i class="fas fa-map-marker-alt"></i>';
+                            break;
+                    }
+                    
+                    div.innerHTML = `${icon} ${contact.value}`;
+                    contactContainer.appendChild(div);
+                });
+                
+                // Show modal
+                document.getElementById('facultyModal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            // Add click handler for principal card to open modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const principalCard = document.getElementById('principalCard');
+        const viewProfileBtn = principalCard.querySelector('.view-profile');
+        
+        viewProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Use the facultyData.principal object instead of creating a new one
+            openFacultyModal(facultyData.principal);
+        });
+    });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ipilan National High School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style2.css">
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.8.0/dist/sql-wasm.js"></script>
+</head>
+<body>
+    <!-- Admin Dashboard -->
+    <div id="dashboardSection" style="display: block;">
+        <!-- Admin Header with Navigation Tabs -->
+        <header class="admin-header">
+            <div class="admin-nav">
+                <div class="admin-logo">
+                    <h1>Ipilan National High School Admin</h1>
+                </div>
+                <div class="admin-actions">
+                    <a href="index.html" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Main Site
+                    </a>
+                    <button id="refreshBtn" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+
+                    <button class="btn btn-info" onclick="openAnnouncementModal()">
+                        <i class="fas fa-bullhorn"></i> Post Announcement
+                    </button>
+
+                    <!-- Settings Button -->
+                    <button class="btn btn-settings" onclick="openModal()">
+                        <i class="fas fa-cog"></i> Manage Strand
+                    </button>
+                    
+                    <!-- Logout Button -->
+                    <button id="logoutBtn" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="admin-nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('students')" id="studentsTab">
+                    <i class="fas fa-users"></i> Students
+                    <span class="counter-badge" id="studentsCounter">0</span>
+                </button>
+                <button class="nav-tab" onclick="switchTab('feedback')" id="feedbackTab">
+                    <i class="fas fa-comments"></i> Feedback
+                    <span class="counter-badge unread-counter" id="feedbackCounter">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Modal Structure -->
+        <div id="strandModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Manage Strand</h2>
+                <form action="{{ url_for('add_strand') }}" method="POST">
+                    <!-- Grade Dropdown -->
+                    <label for="grade">Grade:</label>
+                    <select id="grade" name="grade" required>
+                        <option value="">Select Grade</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                        <option value="Grade 11">Grade 11</option>
+                        <option value="Grade 12">Grade 12</option>
+                    </select>
+
+                    <!-- Strand Name -->
+                    <label for="strandName">Strand Name:</label>
+                    <input type="text" id="strandName" name="strandName" placeholder="Enter Strand Name" required>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+
+        <main class="admin-container">
+            <!-- Statistics Cards (Visible for both tabs) -->
+            <section class="stats-section" id="statsSection">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Total Registrations</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="artsStudents">0</h3>
+                            <p>Arts & Design Track</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stemStudents">0</h3>
+                            <p>STEM Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="abmStudents">0</h3>
+                            <p>ABM Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="humssStudents">0</h3>
+                            <p>HUMSS Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="gasStudents">0</h3>
+                            <p>GAS Strand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="tvlStudents">0</h3>
+                            <p>TVL Track</p>
+                        </div>
+                    </div>
+                    <!-- Feedback Stats Card -->
+                    <div class="stat-card feedback-stat" id="feedbackStatCard" style="display: none;">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalFeedback">0</h3>
+                            <p>Total Feedback</p>
+                            <small id="unreadFeedback">0 unread</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students Tab Content (Default) -->
+            <div id="studentsTabContent" class="tab-content active">
+                <!-- Controls Section -->
+                <section class="controls-section">
+                    <div class="controls-grid">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search students by name or email...">
+                        </div>
+                        <div class="filter-controls">
+                            <select id="strandFilter">
+                                <option value="">All Strands</option>
+                                <option value="Arts and Design Track">Arts & Design Track</option>
+                                <option value="STEM">STEM</option>
+                                <option value="ABM">ABM</option>
+                                <option value="HUMSS">HUMSS</option>
+                                <option value="GAS">GAS</option>
+                                <option value="TVL">TVL Track</option>
+                            </select>
+                            <select id="gradeFilter">
+                                <option value="">All Grade Levels</option>
+                                <option value="Grade 7">Grade 7</option>
+                                <option value="Grade 8">Grade 8</option>
+                                <option value="Grade 9">Grade 9</option>
+                                <option value="Grade 10">Grade 10</option>
+                                <option value="Grade 11">Grade 11</option>
+                                <option value="Grade 12">Grade 12</option>
+                            </select>
+                            <select id="sortBy">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="name">Name A-Z</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Students Table -->
+                <section class="students-section">
+                    <div class="section-header">
+                        <h2>Student Registrations</h2>
+                        <div class="export-actions">
+                            <button id="exportCSV" class="btn btn-outline">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="studentsTable" class="students-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Strand</th>
+                                    <th>Grade Level</th>
+                                    <th>Date of Birth</th>
+                                    <th>Registration Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                <!-- Data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div id="loadingMessage" class="loading-message">
+                            <i class="fas fa-spinner fa-spin"></i> Loading student data...
+                        </div> 
+                        <div id="noDataMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-info-circle"></i> No student registrations found.
+                        </div> 
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be populated by JavaScript -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Feedback Tab Content (Hidden by default) -->
+            <div id="feedbackTabContent" class="tab-content">
+                <!-- Feedback Management Section -->
+                <section class="feedback-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-comments"></i> Feedback Management</h2>
+                        <div class="export-actions">
+                            <button id="exportFeedbackCSV" class="btn btn-outline">
+                                <i class="fas fa-download"></i> Export Feedback
+                            </button>
+                            <button id="markAllRead" class="btn btn-secondary">
+                                <i class="fas fa-check-double"></i> Mark All as Read
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="feedback-controls">
+                        <div class="feedback-filters">
+                            <select id="feedbackCategoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="academic">Academic Programs</option>
+                                <option value="facilities">Facilities</option>
+                                <option value="events">School Events</option>
+                                <option value="teaching">Teaching Methods</option>
+                                <option value="services">Student Services</option>
+                                <option value="safety">Safety & Security</option>
+                                <option value="suggestion">General Suggestion</option>
+                                <option value="compliment">Compliment</option>
+                                <option value="concern">Concern</option>
+                            </select>
+                            <select id="feedbackStatusFilter">
+                                <option value="">All Status</option>
+                                <option value="unread">Unread</option>
+                                <option value="read">Read</option>
+                                <option value="addressed">Addressed</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                            <select id="feedbackRoleFilter">
+                                <option value="">All Roles</option>
+                                <option value="student">Student</option>
+                                <option value="parent">Parent/Guardian</option>
+                                <option value="alumni">Alumni</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="community">Community Member</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="feedback-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="feedbackSearch" placeholder="Search feedback...">
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="feedbackTable" class="feedback-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Submitted By</th>
+                                    <th>Role</th>
+                                    <th>Category</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feedbackTableBody">
+                                <!-- Feedback data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div id="feedbackLoading" class="loading-message">
+                            <i class="fas fa-spinner fa-spin"></i> Loading feedback...
+                        </div>
+                        <div id="noFeedbackMessage" class="no-data-message" style="display: none;">
+                            <i class="fas fa-info-circle"></i> No feedback submissions found.
+                        </div>
+                    </div>
+
+                    <!-- Feedback Pagination -->
+                    <div class="pagination" id="feedbackPagination">
+                        <!-- Pagination will be populated by JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Student Detail Modal -->
+        <div id="studentDetailModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close" onclick="closeStudentModal()">&times;</span>
+                <h2>Student Details</h2>
+                <div id="studentDetailContent">
+                    <!-- Student details will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Detail Modal -->
+        <div id="feedbackDetailModal" class="modal">
+            <div class="modal-content modal-large">
+                <span class="close" onclick="closeFeedbackModal()">&times;</span>
+                <h2><i class="fas fa-comment-dots"></i> Feedback Details</h2>
+                <div id="feedbackDetailContent">
+                    <!-- Feedback details will be populated here -->
+                </div>
+                <div class="feedback-response-section">
+                    <h3><i class="fas fa-reply"></i> Admin Response</h3>
+                    <textarea id="adminResponse" rows="4" placeholder="Enter your response here..."></textarea>
+                    <div class="feedback-actions">
+                        <button class="btn btn-primary" onclick="submitResponse()">
+                            <i class="fas fa-paper-plane"></i> Send Response
+                        </button>
+                        <button class="btn btn-secondary" onclick="markAsAddressed()">
+                            <i class="fas fa-check-circle"></i> Mark as Addressed
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteFeedback()">
+                            <i class="fas fa-trash"></i> Delete Feedback
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeConfirmModal()">&times;</span>
+                <h2>Confirm Action</h2>
+                <p id="confirmMessage">Are you sure you want to perform this action?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+                    <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add the feedback management script -->
+    <script src="{{ url_for('static', filename='populatetable.js') }}"></script>
+    <script src="{{ url_for('static', filename='feedback.js') }}"></script>
+    
+    <!-- Tab Management Script -->
+    <script>
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`${tabName}TabContent`).classList.add('active');
+            
+            // Add active class to clicked tab
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            
+            // Update statistics display
+            if (tabName === 'feedback') {
+                document.getElementById('feedbackStatCard').style.display = 'flex';
+                // Refresh feedback data when tab is switched to
+                if (typeof loadFeedback === 'function') {
+                    loadFeedback();
+                }
+            } else {
+                document.getElementById('feedbackStatCard').style.display = 'none';
+            }
+            
+            // Store current tab in localStorage for persistence
+            localStorage.setItem('adminActiveTab', tabName);
+        }
+        
+        // Update feedback counter in navigation
+        function updateFeedbackCounter(totalCount, unreadCount) {
+            const feedbackCounter = document.getElementById('feedbackCounter');
+            const totalFeedbackElement = document.getElementById('totalFeedback');
+            const unreadFeedbackElement = document.getElementById('unreadFeedback');
+            
+            if (feedbackCounter) {
+                feedbackCounter.textContent = totalCount;
+                if (unreadCount > 0) {
+                    feedbackCounter.classList.add('has-unread');
+                } else {
+                    feedbackCounter.classList.remove('has-unread');
+                }
+            }
+            
+            if (totalFeedbackElement) {
+                totalFeedbackElement.textContent = totalCount;
+            }
+            
+            if (unreadFeedbackElement) {
+                unreadFeedbackElement.textContent = `${unreadCount} unread`;
+            }
+        }
+        
+        // Update students counter
+        function updateStudentsCounter(count) {
+            const studentsCounter = document.getElementById('studentsCounter');
+            if (studentsCounter) {
+                studentsCounter.textContent = count;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore last active tab from localStorage
+            const lastActiveTab = localStorage.getItem('adminActiveTab') || 'students';
+            switchTab(lastActiveTab);
+            
+            // Initialize feedback management
+            if (typeof initializeFeedback === 'function') {
+                initializeFeedback();
+            }
+        });
+    </script>
+</body>
+</html>
